@@ -44,7 +44,7 @@ Files and screens, in order:
      ```
    - Supported directions: `["ltr", "rtl"]`. Save.
 4. Wagtail admin → the website-02 page → Announcement tab → the block:
-   - Version: `1.1.0`
+   - Version: open the list. `1.1.0 (coming-soon-hero)` is now there, because it is approved. Pick it.
    - Props: add `, "subheading": "Spring 2027"` inside the JSON object.
    - **Publish**.
 
@@ -57,6 +57,10 @@ change is backward compatible. In the real catalogue each version would be its o
 
 **Bonus:** try to edit the props schema of 1.0.0 in the admin. The save fails:
 "Approved versions cannot change props_schema. Create a new version."
+
+**Bonus 2:** add version `1.2.0` with status `draft`. It does not appear in the Wagtail version list.
+Pick `1.1.0` for `updates-signup` (it has no 1.1.0): Wagtail refuses with
+"No approved or published version with this number." The list is not filtered by asset, so `clean()` checks the pair.
 
 ## 3. Add a `radius` token to both themes and use it
 
@@ -88,7 +92,8 @@ change is backward compatible. In the real catalogue each version would be its o
 1. Django admin → Asset versions → `updates-signup@1.0.0` → Status: `draft`. Save.
    (Allowed: status may change; the contract may not.)
 2. Open the Updates tab on any account.
-3. Wagtail admin → edit a page → add a block: `updates-signup` is no longer in the asset list.
+3. Wagtail admin → edit a page → add a block: `updates-signup` is no longer in the asset list,
+   and the version list shows `1.0.0 (coming-soon-hero)` only.
 
 **Expected:** "Block block-002 is not available (not_renderable_status)." The rest of the page works.
 The Next.js terminal shows a `console.warn` with the details. Set the status back to `approved`.

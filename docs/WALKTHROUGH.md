@@ -44,7 +44,7 @@ Then show http://127.0.0.1:8000/api/sites/account-ocean/.
 ## 4. Where input is validated, and how a new approved version becomes selectable
 
 **Open:** `backend/catalogue/validation.py`, `backend/catalogue/models.py` (`AssetVersion.clean`),
-`backend/website/blocks.py` (`selectable_assets`, `CatalogueAssetBlock.clean`),
+`backend/website/blocks.py` (`selectable_assets`, `selectable_versions`, `CatalogueAssetBlock.clean`),
 `frontend/lib/catalogue.ts` (`resolveBlock`).
 
 > "Validation happens in three places.
@@ -55,8 +55,13 @@ Then show http://127.0.0.1:8000/api/sites/account-ocean/.
 > and that the props match that version's props_schema.
 > Three: when the page renders, the renderer checks again and fails closed. One bad block shows a
 > placeholder; the page never crashes.
-> A new version becomes selectable as soon as its status is approved. Existing pages do not move:
-> they keep the exact version they pinned until an editor changes it and publishes again."
+> A new version becomes selectable as soon as its status is approved: it appears in the editor's
+> version list, with the assets that have it. Draft, validated and rejected versions are never listed.
+> Existing pages do not move: they keep the exact version they pinned until an editor changes it
+> and publishes again."
+
+**Show it live (1 minute):** Django admin → add `coming-soon-hero` 1.1.0 as approved (same schema as 1.0.0) →
+Wagtail edit page → open the version list: `1.1.0 (coming-soon-hero)` is there. Do not publish. Delete 1.1.0 after.
 
 **Rebuild or runtime?** (they will probably ask)
 

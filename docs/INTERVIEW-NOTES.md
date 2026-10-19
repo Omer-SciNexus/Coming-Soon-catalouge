@@ -74,6 +74,20 @@ A second rendering system doubles maintenance and splits bug fixes.
 - If a dependency is late: work against the agreed contract with fixtures and a stub, say so early, and keep the
   integration test ready so it runs the day the real service arrives.
 
+**Follow-up questions about this demo (one-line answers)**
+- *Your brief said no backend. Why build one?* "Your invitation asked for database records for themes and
+  elements and a way to select them, so I used small Django models instead of JSON files. It is two apps on SQLite."
+- *The sample page id is 101, your API says 3. Why?* "Wagtail sets the page id when the page is created.
+  101 is your example value. The adapter test compares everything except the id."
+- *Why two usage rows per page view?* "Only in dev: React Strict Mode runs effects twice. A production build
+  sends once. Your `asset_usage` has `first_seen_at` / `last_seen_at`, so the real table would update one row
+  per block instance instead of adding a row per view."
+- *Can anyone fake usage events?* "Yes, today the beacon trusts `client_id` and `account_id` from the browser.
+  In production Django would take them from `website_id`, check the block ids belong to that page, and rate-limit."
+- *Why does the renderer not check props against the schema?* "Django checks the schema when the editor saves,
+  and approved schemas cannot change. The renderer only checks the cheap things and fails closed.
+  Full validation in the browser would mean shipping a JSON Schema library to every visitor."
+
 ## Part 5: closing, 3 minutes
 
 - Availability: [your hours and time zone]. Start date: [date].
