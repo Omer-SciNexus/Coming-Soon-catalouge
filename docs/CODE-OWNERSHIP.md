@@ -1,0 +1,59 @@
+# Code ownership: what each file does
+
+The first version of every file below was generated with an AI assistant.
+Use this list to study the code. Before the interview, fill in the last column honestly:
+"studied", "changed by hand", or "rewrote by hand".
+
+## Data
+
+| File | What it does | Me |
+|---|---|---|
+| `data/*.sample.json`, `asset-manifest.schema.json` | The client's files, copied unchanged. | |
+| `data/wagtail-page.website-02.json` | Demo assumption: a page for website-02 with different text, same assets. | |
+
+## Backend (Django + Wagtail)
+
+| File | What it does | Me |
+|---|---|---|
+| `backend/config/settings.py` | Standard Django + Wagtail settings (from Wagtail's project template), SQLite, `DEMO_DATA_DIR`, `FRONTEND_URL`. | |
+| `backend/config/urls.py` | Django admin at `/django-admin/`, Wagtail admin at `/cms/`, the site API, the usage API, Wagtail pages last. | |
+| `backend/catalogue/validation.py` | `manifest_errors`: checks a manifest against the client's schema, and checks that `props_schema` is a valid JSON Schema. `props_errors`: checks props against one version's schema. Uses `jsonschema`. | |
+| `backend/catalogue/models.py` | `Theme` (versioned tokens), `Asset` (stable identity), `AssetVersion` (contract and status; `clean()` validates and locks approved versions), `AssetUsageEvent` (one row per rendered block). | |
+| `backend/catalogue/views.py` | `record_usage`: the public beacon endpoint. Checks the shape, checks that the asset version exists, stores rows. | |
+| `backend/catalogue/admin.py` | Registers the catalogue models in Django admin. | |
+| `backend/website/models.py` | `Website` (account → website → theme). `ComingSoonPage`: a Wagtail page with `tabs` StreamField; `serve()` redirects to Next.js because the site is headless. | |
+| `backend/website/blocks.py` | `CatalogueAssetBlock`: asset (chooser lists only assets with an approved/published version), exact version, props as JSON text; `clean()` validates. `TabBlock`: id, label, body. | |
+| `backend/website/adapter.py` | `to_catalogue_page`: maps a Wagtail page to exactly the shape of `wagtail-page.sample.json`. Bad props become `null` so the renderer fails closed. | |
+| `backend/website/views.py` | `site_payload`: one JSON response with account, theme, published page and the manifests of the versions the page pins. | |
+| `backend/website/admin.py` | Registers `Website` in Django admin. | |
+| `backend/website/management/commands/seed_demo.py` | Loads `data/` into the database. Runs `full_clean()` on each version. Creates and publishes the two pages. Keeps existing records. | |
+| `backend/catalogue/tests.py` | Manifest and props validation, version immutability, usage endpoint. | |
+| `backend/website/tests.py` | Block validation, chooser, adapter output equals the sample, two themes, 404, drafts hidden, redirect. | |
+
+## Frontend (Next.js)
+
+| File | What it does | Me |
+|---|---|---|
+| `frontend/next.config.ts` | `output: "standalone"` for self-hosting; rewrites `/api/usage` to Django. | |
+| `frontend/lib/types.ts` | TypeScript types for the Django JSON. | |
+| `frontend/lib/api.ts` | `getSite`: fetches the site payload with `no-store`; `null` on 404. | |
+| `frontend/lib/theme.ts` | `tokensToCssVars`: `button_text` → `--button-text`; skips non-strings. | |
+| `frontend/lib/registry.ts` | The allowlist: `component_key` → React component. | |
+| `frontend/lib/catalogue.ts` | `resolveBlock`: exact version match, status, direction, registry, props object; returns a reason on failure. | |
+| `frontend/app/page.tsx` | Reads query params, loads the site, sets CSS variables and `dir`, renders tabs, blocks and the beacon. | |
+| `frontend/app/layout.tsx`, `globals.css` | HTML shell and page-level styles (all from CSS variables). | |
+| `frontend/components/CatalogueBlock.tsx` | Renders one block with analytics `data-*` attributes, or a placeholder. | |
+| `frontend/components/UsageBeacon.tsx` | Client component: after render, sends one batched usage event. | |
+| `frontend/components/assets/ComingSoonHero.*` | Section asset. Styled only with CSS variables and logical properties. | |
+| `frontend/components/assets/UpdatesSignup.*` | Element asset (client component): email form, shows a thank-you message. | |
+| `frontend/tests/*.test.ts` | Resolver reasons, registry matches the schema enum, token conversion, no hard-coded colours/fonts in assets. | |
+
+## Concepts to be able to explain without notes
+
+- Why the version is matched exactly (pinning; rollback restores the reviewed configuration).
+- Why the renderer checks again although Django validated (fail closed; defence in depth).
+- Why the registry is an allowlist (a manifest cannot point to code that was not built and reviewed).
+- Why `cache: "no-store"` and `force-dynamic` (admin changes show on refresh).
+- Why `live()` in the API (drafts never reach the public site).
+- Why logical CSS properties (RTL without extra code).
+- Why props are JSON text in Wagtail (no built-in JSON block; validated in `clean()`).
