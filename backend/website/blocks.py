@@ -13,6 +13,21 @@ def selectable_assets():
     return [(asset.asset_id, asset.asset_id) for asset in assets]
 
 
+def version_key(number):
+    """'1.10.0' -> (1, 10, 0), so 1.10.0 sorts after 1.9.0 (as text it would sort before)."""
+    return tuple(int(part) for part in number.split("."))
+
+
+def selectable_versions():
+    """Choices for the editor: every approved or published version number,
+    with the assets that have it, for example "1.0.0 (coming-soon-hero, updates-signup)"."""
+    assets_by_number = {}
+    for version in AssetVersion.objects.filter(status__in=RENDERABLE_STATUSES).select_related("asset"):
+        assets_by_number.setdefault(version.version, []).append(version.asset.asset_id)
+    numbers = sorted(assets_by_number, key=version_key)
+    return [(number, f"{number} ({', '.join(sorted(assets_by_number[number]))})") for number in numbers]
+
+
 def field_error(name, message):
     return blocks.StructBlockValidationError(block_errors={name: ValidationError(message)})
 
@@ -20,7 +35,11 @@ def field_error(name, message):
 class CatalogueAssetBlock(blocks.StructBlock):
     asset_id = blocks.ChoiceBlock(choices=selectable_assets)
     # Exact version. A page keeps the version it was approved with; it never follows "latest".
-    version = blocks.CharBlock(help_text="Exact version, for example 1.0.0")
+    # The list cannot filter by the asset chosen above (that needs custom JS), so clean() checks the pair.
+    version = blocks.ChoiceBlock(
+        choices=selectable_versions,
+        help_text="Only approved or published versions are listed. Brackets show which assets have them.",
+    )
     # Wagtail has no built-in JSON block, so props are stored as JSON text and checked in clean().
     props = blocks.TextBlock(default="{}", help_text="JSON object matching the version's props_schema")
 

@@ -6,9 +6,9 @@ from django.core.management import call_command
 from django.test import TestCase
 from wagtail.blocks import StructBlockValidationError
 
-from catalogue.models import AssetVersion
+from catalogue.models import Asset, AssetVersion
 
-from .blocks import CatalogueAssetBlock, selectable_assets
+from .blocks import CatalogueAssetBlock, selectable_assets, selectable_versions
 from .models import ComingSoonPage
 
 
@@ -46,6 +46,30 @@ class CatalogueAssetBlockTests(SeededTestCase):
         self.assertNotIn(("coming-soon-hero", "coming-soon-hero"), selectable_assets())
         with self.assertRaises(StructBlockValidationError):
             self.clean({"heading": "Hi", "description": "Soon"})
+
+
+class SelectableVersionsTests(SeededTestCase):
+    def add_version(self, number, status):
+        hero = AssetVersion.objects.get(asset__asset_id="coming-soon-hero", version="1.0.0")
+        AssetVersion.objects.create(
+            asset=Asset.objects.get(asset_id="coming-soon-hero"), version=number, source="human",
+            status=status, component_key="ComingSoonHero", props_schema=hero.props_schema,
+        )
+
+    def test_seeded_version_lists_both_assets(self):
+        self.assertEqual(selectable_versions(), [("1.0.0", "1.0.0 (coming-soon-hero, updates-signup)")])
+
+    def test_new_approved_version_becomes_selectable_and_draft_does_not(self):
+        self.add_version("1.1.0", "approved")
+        self.add_version("1.2.0", "draft")
+        numbers = [number for number, _ in selectable_versions()]
+        self.assertEqual(numbers, ["1.0.0", "1.1.0"])
+
+    def test_versions_sort_as_numbers_not_text(self):
+        self.add_version("1.10.0", "approved")
+        self.add_version("1.9.0", "approved")
+        numbers = [number for number, _ in selectable_versions()]
+        self.assertEqual(numbers, ["1.0.0", "1.9.0", "1.10.0"])
 
 
 class SiteApiTests(SeededTestCase):
