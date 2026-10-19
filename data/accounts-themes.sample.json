@@ -1,0 +1,34 @@
+[
+  {
+    "account_id": "account-ocean",
+    "website_id": "website-01",
+    "theme_id": "theme-ocean",
+    "theme_version": "1.0.0",
+    "design_tokens": {
+      "background": "#eff4fa",
+      "surface": "#ffffff",
+      "text": "#17283f",
+      "accent": "#125f90",
+      "button_text": "#ffffff",
+      "border": "#c7d7e6",
+      "font_family": "system-ui, sans-serif"
+    },
+    "client_id": "client-01"
+  },
+  {
+    "account_id": "account-olive",
+    "website_id": "website-02",
+    "theme_id": "theme-olive",
+    "theme_version": "1.0.0",
+    "design_tokens": {
+      "background": "#f4f2e8",
+      "surface": "#ffffff",
+      "text": "#293225",
+      "accent": "#46683d",
+      "button_text": "#ffffff",
+      "border": "#d6d8c6",
+      "font_family": "Georgia, serif"
+    },
+    "client_id": "client-01"
+  }
+]

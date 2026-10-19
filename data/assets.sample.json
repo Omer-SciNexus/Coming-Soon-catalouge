@@ -1,0 +1,32 @@
+[
+  {
+    "asset_id": "coming-soon-hero",
+    "version": "1.0.0",
+    "kind": "section",
+    "source": "human",
+    "status": "approved",
+    "component_key": "ComingSoonHero",
+    "supported_directions": ["ltr", "rtl"],
+    "props_schema": {
+      "type": "object",
+      "required": ["heading", "description"],
+      "properties": {"heading": {"type": "string"}, "description": {"type": "string"}},
+      "additionalProperties": false
+    }
+  },
+  {
+    "asset_id": "updates-signup",
+    "version": "1.0.0",
+    "kind": "element",
+    "source": "ai",
+    "status": "approved",
+    "component_key": "UpdatesSignup",
+    "supported_directions": ["ltr", "rtl"],
+    "props_schema": {
+      "type": "object",
+      "required": ["label"],
+      "properties": {"label": {"type": "string"}},
+      "additionalProperties": false
+    }
+  }
+]

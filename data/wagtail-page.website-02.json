@@ -1,0 +1,22 @@
+{
+  "id": 102,
+  "meta": {"type": "website.ComingSoonPage"},
+  "website_id": "website-02",
+  "title": "Coming Soon",
+  "tabs": [
+    {
+      "id": "announcement",
+      "label": "Announcement",
+      "body": [
+        {"type": "catalogue_asset", "id": "block-101", "value": {"asset_id": "coming-soon-hero", "version": "1.0.0", "props": {"heading": "Fresh ideas are growing here", "description": "Our second website opens soon."}}}
+      ]
+    },
+    {
+      "id": "updates",
+      "label": "Updates",
+      "body": [
+        {"type": "catalogue_asset", "id": "block-102", "value": {"asset_id": "updates-signup", "version": "1.0.0", "props": {"label": "Tell me when it opens"}}}
+      ]
+    }
+  ]
+}

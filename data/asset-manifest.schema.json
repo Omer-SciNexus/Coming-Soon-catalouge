@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/interview/asset-manifest.schema.json",
+  "title": "Illustrative catalogue asset manifest — interview only",
+  "description": "A deliberately small subset, NOT the project's authoritative database schema.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["asset_id", "version", "kind", "source", "status", "component_key", "props_schema"],
+  "properties": {
+    "asset_id": {"type": "string", "pattern": "^[a-z][a-z0-9-]+$"},
+    "version": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"},
+    "kind": {"type": "string", "enum": ["section", "element"]},
+    "source": {"type": "string", "enum": ["human", "ai"]},
+    "status": {"type": "string", "enum": ["draft", "validated", "approved", "published", "rejected"]},
+    "component_key": {"type": "string", "enum": ["ComingSoonHero", "UpdatesSignup"]},
+    "props_schema": {
+      "type": "object",
+      "required": ["type", "required", "properties"],
+      "properties": {
+        "type": {"const": "object"},
+        "required": {"type": "array", "items": {"type": "string"}},
+        "properties": {"type": "object"},
+        "additionalProperties": {"type": "boolean"}
+      }
+    },
+    "supported_directions": {
+      "type": "array", "items": {"enum": ["ltr", "rtl"]}, "uniqueItems": true
+    }
+  }
+}
