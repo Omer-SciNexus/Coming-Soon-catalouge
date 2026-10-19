@@ -1,0 +1,61 @@
+/* Page shell only. Asset styles live next to each asset in components/assets/. */
+/* All colours and fonts come from the account theme (CSS variables set in page.tsx). */
+
+body {
+  margin: 0;
+}
+
+.site {
+  min-height: 100vh;
+  background: var(--background);
+  color: var(--text);
+  font-family: var(--font-family);
+  padding-block: 1.5rem 3rem;
+  padding-inline: 1rem;
+}
+
+.site-inner {
+  max-width: 48rem;
+  margin-inline: auto;
+}
+
+.demo-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
+  font-size: 0.85rem;
+  margin-block-end: 2rem;
+}
+
+.demo-controls a,
+.tab {
+  color: var(--accent);
+}
+
+.demo-controls a[aria-current="true"] {
+  font-weight: bold;
+}
+
+.tablist {
+  display: flex;
+  gap: 0.25rem;
+  border-block-end: 2px solid var(--border);
+  margin-block-end: 1.5rem;
+}
+
+.tab {
+  padding-block: 0.6rem;
+  padding-inline: 1rem;
+  text-decoration: none;
+}
+
+.tab[aria-selected="true"] {
+  background: var(--accent);
+  color: var(--button-text);
+}
+
+.block-placeholder {
+  border: 2px dashed var(--border);
+  padding: 1rem;
+  font-family: monospace;
+}
