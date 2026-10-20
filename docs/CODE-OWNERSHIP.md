@@ -15,8 +15,8 @@ Use this list to study the code. Before the interview, fill in the last column h
 
 | File | What it does | Me |
 |---|---|---|
-| `backend/config/settings.py` | Standard Django + Wagtail settings (from Wagtail's project template), SQLite, `DEMO_DATA_DIR`, `FRONTEND_URL`. | |
-| `backend/config/urls.py` | Django admin at `/django-admin/`, Wagtail admin at `/cms/`, the site API, the usage API, Wagtail pages last. | |
+| `backend/config/settings.py` | Standard Django + Wagtail settings (from Wagtail's project template), SQLite, `DEMO_DATA_DIR`, `FRONTEND_URL`, console email backend (reset emails print in the terminal). | |
+| `backend/config/urls.py` | Django admin at `/django-admin/`, Wagtail admin at `/cms/`, the site API, the usage API, uploaded media (dev only, `static()`), Wagtail pages last. | |
 | `backend/catalogue/validation.py` | `manifest_errors`: checks a manifest against the client's schema, and checks that `props_schema` is a valid JSON Schema. `props_errors`: checks props against one version's schema. Uses `jsonschema`. | |
 | `backend/catalogue/models.py` | `Theme` (versioned tokens), `Asset` (stable identity), `AssetVersion` (contract and status; `clean()` validates and locks approved versions), `AssetUsageEvent` (one row per rendered block). | |
 | `backend/catalogue/views.py` | `record_usage`: the public beacon endpoint. Checks the shape, checks that the asset version exists, stores rows. | |
@@ -42,11 +42,11 @@ Use this list to study the code. Before the interview, fill in the last column h
 | `frontend/lib/registry.ts` | The allowlist: `component_key` → React component. | |
 | `frontend/lib/catalogue.ts` | `resolveBlock`: exact version match, status, direction, registry, props object; returns a reason on failure. | |
 | `frontend/app/page.tsx` | Reads query params, loads the site, sets CSS variables and `dir`, renders tabs, blocks and the beacon. | |
-| `frontend/app/layout.tsx`, `globals.css` | HTML shell and page-level styles (all from CSS variables). | |
+| `frontend/app/layout.tsx`, `globals.css` | HTML shell and page-level styles: title badge with pulsing dot, pill tabs (all from CSS variables), and the floating demo toolbar (fixed neutral colours, always left-to-right). | |
 | `frontend/components/CatalogueBlock.tsx` | Renders one block with analytics `data-*` attributes, or a placeholder. | |
 | `frontend/components/UsageBeacon.tsx` | Client component: after render, sends one batched usage event. | |
-| `frontend/components/assets/ComingSoonHero.*` | Section asset. Styled only with CSS variables and logical properties. | |
-| `frontend/components/assets/UpdatesSignup.*` | Element asset (client component): email form, shows a thank-you message. | |
+| `frontend/components/assets/ComingSoonHero.*` | Section asset: gradient card, glow circle, accent bar, big heading. Styled only with CSS variables, `color-mix()` and logical properties. | |
+| `frontend/components/assets/UpdatesSignup.*` | Element asset (client component): email form with pill input and button, hover and focus states, then a thank-you message. | |
 | `frontend/tests/*.test.ts` | Resolver reasons, registry matches the schema enum, token conversion, no hard-coded colours/fonts in assets. | |
 
 ## Concepts to be able to explain without notes
@@ -57,6 +57,9 @@ Use this list to study the code. Before the interview, fill in the last column h
 - Why `cache: "no-store"` and `force-dynamic` (admin changes show on refresh).
 - Why `live()` in the API (drafts never reach the public site).
 - Why logical CSS properties (RTL without extra code).
+- Why `color-mix()` (lighter, darker or see-through shades from the same theme tokens, so a theme needs only
+  7 tokens and the "no hard-coded colours" test still passes).
+- Why `var(--radius, 1.5rem)` (the second value is a fallback: a theme may add a `radius` token, but does not have to).
 - Why props are JSON text in Wagtail (no built-in JSON block; validated in `clean()`).
 - Why the version list is not filtered by the chosen asset (one block field cannot depend on another
   without custom JS; the label shows which assets have each version and `clean()` rejects a wrong pair).

@@ -18,7 +18,8 @@ Where things are:
 2. In Design tokens, change `"accent": "#46683d"` to `"accent": "#b0452c"`. Save.
 3. Refresh http://localhost:3000/?account=account-olive.
 
-**Expected:** olive heading, tab and button turn red-brown. Ocean does not change. No code changed.
+**Expected:** olive badge, accent bar, active tab, button and background glow turn red-brown
+(the softer shades follow too, because `color-mix()` derives them from `--accent`). Ocean does not change. No code changed.
 
 ## 2. Add an optional `subheading` prop as version 1.1.0, only for website-02
 
@@ -64,13 +65,17 @@ Pick `1.1.0` for `updates-signup` (it has no 1.1.0): Wagtail refuses with
 
 ## 3. Add a `radius` token to both themes and use it
 
-1. Django admin → Themes → `theme-ocean@1.0.0` → add `"radius": "12px"` to the tokens. Save.
-2. Same for `theme-olive@1.0.0` with `"radius": "0px"`.
-3. `ComingSoonHero.module.css` → in `.hero` add `border-radius: var(--radius);`
-4. `UpdatesSignup.module.css` → in `.form`, `.input` and `.button` add `border-radius: var(--radius);`
+The cards already use `border-radius: var(--radius, 1.5rem)`: the theme's `--radius` if it exists, else 1.5rem.
 
-**Expected:** ocean has rounded corners, olive has square ones. `npm test` still passes
-(no hex colour in asset files). `tokensToCssVars` needs no change: `radius` becomes `--radius`.
+1. Django admin → Themes → `theme-ocean@1.0.0` → add `"radius": "8px"` to the tokens. Save.
+2. Same for `theme-olive@1.0.0` with `"radius": "0px"`.
+3. Refresh both accounts.
+
+**Expected:** ocean cards have small rounded corners, olive cards are square. No code changed.
+`tokensToCssVars` needs no change: `radius` becomes `--radius`.
+
+**If they ask for the input and button too:** `UpdatesSignup.module.css` → in `.input` and `.button`
+change `border-radius: 999px;` to `border-radius: var(--radius, 999px);`. `npm test` still passes.
 
 ## 4. Add a third account, account-sand
 
@@ -102,9 +107,10 @@ The Next.js terminal shows a `console.warn` with the details. Set the status bac
 
 Click **RTL**, or add `&dir=rtl` to the URL. Check both tabs.
 
-**Expected:** the whole layout mirrors: tabs, the hero accent border (left side becomes right side),
-the input and the button. No extra CSS, because the assets use logical properties
-(`border-inline-start`, `padding-inline`, `text-align: start`).
+**Expected:** the whole site mirrors: badge (dot on the other side), tabs, the hero text
+and accent bar (now on the right), the glow circle (top right becomes top left), the input and the button.
+No extra CSS, because the assets use logical properties (`inset-inline-end`, `padding-inline`, `text-align: start`).
+The dark demo toolbar stays left-to-right on purpose: it is an interview tool, not site content.
 
 ## 7. Put an undeclared prop in the page and see validation reject it
 

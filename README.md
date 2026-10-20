@@ -50,6 +50,19 @@ Open:
 | Django admin (themes, assets, versions, websites, usage) | http://127.0.0.1:8000/django-admin/ |
 | Site API (what Next.js reads) | http://127.0.0.1:8000/api/sites/account-ocean/ |
 
+Forgot the admin password, or cannot log in:
+
+```powershell
+cd "E:\Work\Demo project\upwork deveo\Project\backend"
+.\.venv\Scripts\python.exe manage.py changepassword <username>
+```
+
+If you do not remember the username, or no user exists (for example after a reset), run `createsuperuser` again.
+The "Forgotten password?" link on the login page also works: the email is printed in the backend terminal,
+not sent. The link in it is split over two lines; remove the `=` at the end of the first line and join them.
+
+`npm run dev` shows code changes at once. `npm start` serves the last `npm run build`, so it shows old code until you build again.
+
 Reset the demo data (stop the backend first):
 
 ```powershell
