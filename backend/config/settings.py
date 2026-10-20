@@ -82,6 +82,9 @@ STATIC_ROOT = BASE_DIR / "static"
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
+# Dev only: emails (for example "Forgotten password?" links) are printed in the runserver terminal.
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
 WAGTAIL_SITE_NAME = "Coming Soon catalogue demo"
 WAGTAILADMIN_BASE_URL = "http://127.0.0.1:8000"
 WAGTAILSEARCH_BACKENDS = {"default": {"BACKEND": "wagtail.search.backends.database"}}
