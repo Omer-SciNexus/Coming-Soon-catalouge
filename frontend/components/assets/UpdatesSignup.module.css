@@ -1,31 +1,92 @@
+/* Only theme variables. color-mix() makes hover, focus and shadow shades of them. */
+
+.form,
+.thanks {
+  padding: clamp(1.5rem, 5vw, 2.5rem);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius, 1.5rem);
+  box-shadow:
+    0 1px 2px color-mix(in srgb, var(--text) 6%, transparent),
+    0 24px 48px -28px color-mix(in srgb, var(--text) 35%, transparent);
+}
+
 .form {
   display: flex;
   flex-wrap: wrap;
   gap: 0.75rem;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  padding: 1.5rem;
 }
 
 .input {
-  flex: 1 1 16rem;
-  padding: 0.7rem;
+  /* Big grow factor: on one line the input takes the free space; when the button wraps
+     to its own line (narrow screens), the button's own grow makes it full width. */
+  flex: 999 1 16rem;
+  min-width: 0;
+  padding-block: 0.85rem;
+  padding-inline: 1.1rem;
+  background: var(--background);
   border: 1px solid var(--border);
+  border-radius: 999px;
   color: var(--text);
   font: inherit;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.input::placeholder {
+  color: color-mix(in srgb, var(--text) 45%, transparent);
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 20%, transparent);
 }
 
 .button {
-  padding-block: 0.7rem;
-  padding-inline: 1.4rem;
+  flex: 1 0 auto;
+  padding-block: 0.85rem;
+  padding-inline: 1.6rem;
   border: none;
+  border-radius: 999px;
   background: var(--accent);
   color: var(--button-text);
   font: inherit;
+  font-weight: 600;
   cursor: pointer;
+  transition: background-color 0.15s, transform 0.15s;
+}
+
+/* Hover: the accent mixed with a little of the text colour, so it gets darker in every theme. */
+.button:hover {
+  background: color-mix(in srgb, var(--accent) 85%, var(--text));
+}
+
+.button:active {
+  transform: translateY(1px);
+}
+
+.button:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--accent) 40%, transparent);
+  outline-offset: 2px;
 }
 
 .thanks {
-  color: var(--accent);
-  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0;
+  color: var(--text);
+  font-weight: 600;
+}
+
+.thanks::before {
+  content: "✓";
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--button-text);
 }

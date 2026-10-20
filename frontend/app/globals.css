@@ -1,52 +1,106 @@
 /* Page shell only. Asset styles live next to each asset in components/assets/. */
-/* All colours and fonts come from the account theme (CSS variables set in page.tsx). */
+/* All site colours and fonts come from the account theme (CSS variables set in page.tsx).
+   color-mix() makes lighter or see-through shades of those same colours, so no extra tokens are needed.
+   One exception: the demo toolbar at the end of this file uses fixed neutral colours. */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
 
 body {
   margin: 0;
+  -webkit-font-smoothing: antialiased;
 }
 
 .site {
   min-height: 100vh;
-  background: var(--background);
+  background:
+    radial-gradient(60rem 30rem at 50% -10%, color-mix(in srgb, var(--accent) 14%, transparent), transparent),
+    var(--background);
   color: var(--text);
   font-family: var(--font-family);
-  padding-block: 1.5rem 3rem;
+  line-height: 1.6;
+  /* Fixed top space (not vertical centring), so the tabs stay in place when the panel height changes.
+     The bottom space keeps the content clear of the fixed demo toolbar. */
+  padding-block: clamp(3rem, 14vh, 9rem) 8rem;
   padding-inline: 1rem;
 }
 
 .site-inner {
-  max-width: 48rem;
+  max-width: 52rem;
   margin-inline: auto;
 }
 
-.demo-controls {
+/* The page title is a small badge with a pulsing dot; the hero heading is the big text. */
+.page-title {
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem 1.5rem;
-  font-size: 0.85rem;
-  margin-block-end: 2rem;
-}
-
-.demo-controls a,
-.tab {
+  width: fit-content; /* own line, but only as wide as the text */
+  align-items: center;
+  gap: 0.6rem;
+  margin-block: 0 1.25rem;
+  padding-block: 0.35rem;
+  padding-inline: 0.9rem;
+  background: color-mix(in srgb, var(--accent) 10%, var(--surface));
+  border: 1px solid color-mix(in srgb, var(--accent) 25%, var(--border));
+  border-radius: 999px;
   color: var(--accent);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
-.demo-controls a[aria-current="true"] {
-  font-weight: bold;
+.page-title::before {
+  content: "";
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 50%, transparent);
+  }
+  70%,
+  100% {
+    box-shadow: 0 0 0 0.5rem transparent;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-title::before {
+    animation: none;
+  }
 }
 
 .tablist {
-  display: flex;
+  display: inline-flex;
+  flex-wrap: wrap;
   gap: 0.25rem;
-  border-block-end: 2px solid var(--border);
+  padding: 0.3rem;
   margin-block-end: 1.5rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--text) 6%, transparent);
 }
 
 .tab {
-  padding-block: 0.6rem;
-  padding-inline: 1rem;
+  padding-block: 0.5rem;
+  padding-inline: 1.1rem;
+  border-radius: 999px;
+  color: var(--text);
+  font-weight: 500;
   text-decoration: none;
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.tab:hover {
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
 }
 
 .tab[aria-selected="true"] {
@@ -54,8 +108,98 @@ body {
   color: var(--button-text);
 }
 
+.tab:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--accent) 40%, transparent);
+  outline-offset: 2px;
+}
+
+.panel {
+  display: grid;
+  gap: 1rem;
+}
+
 .block-placeholder {
+  margin: 0;
+  padding-block: 1rem;
+  padding-inline: 1.25rem;
+  background: color-mix(in srgb, var(--surface) 60%, transparent);
   border: 2px dashed var(--border);
-  padding: 1rem;
-  font-family: monospace;
+  border-radius: var(--radius, 1.5rem);
+  color: color-mix(in srgb, var(--text) 70%, transparent);
+  font-size: 0.9rem;
+}
+
+/* Demo toolbar: an interview tool, not part of the client's site.
+   It floats at the bottom and uses fixed neutral colours on purpose, so it looks the same
+   under every theme and is clearly separate from the themed page. */
+.demo-bar {
+  position: fixed;
+  z-index: 10;
+  inset-block-end: 1rem;
+  inset-inline: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem 0.75rem;
+  width: fit-content;
+  margin-inline: auto; /* with both insets set, this centres the fixed bar */
+  padding: 0.4rem;
+  background: rgb(15 23 42 / 0.9);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgb(255 255 255 / 0.1);
+  border-radius: 1rem;
+  box-shadow: 0 16px 40px -16px rgb(0 0 0 / 0.55);
+  color: #e2e8f0;
+  font: 500 0.8rem/1.2 system-ui, sans-serif;
+}
+
+.demo-group {
+  display: flex;
+  align-items: center;
+  gap: 0.15rem;
+  padding: 0.15rem;
+  background: rgb(255 255 255 / 0.06);
+  border-radius: 0.75rem;
+}
+
+.demo-label {
+  padding-inline: 0.5rem 0.3rem;
+  color: #94a3b8;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.demo-option {
+  padding-block: 0.35rem;
+  padding-inline: 0.7rem;
+  border-radius: 0.6rem;
+  color: #cbd5e1;
+  text-decoration: none;
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.demo-option:hover {
+  background: rgb(255 255 255 / 0.1);
+  color: #ffffff;
+}
+
+.demo-option[aria-current="true"] {
+  background: #ffffff;
+  color: #0f172a;
+}
+
+.demo-option:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
+}
+
+/* The theme id and version, so the interviewer can see which theme record is applied. */
+.demo-theme {
+  padding-inline: 0.5rem;
+  color: #94a3b8;
+  font-family: ui-monospace, Consolas, monospace;
+  font-size: 0.75rem;
 }

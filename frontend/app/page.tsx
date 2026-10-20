@@ -32,20 +32,31 @@ export default async function Page({ searchParams }: { searchParams: Promise<Que
   return (
     <main className="site" dir={direction} style={tokensToCssVars(theme.design_tokens)}>
       <div className="site-inner">
-        <nav className="demo-controls" aria-label="Demo controls">
-          {DEMO_ACCOUNTS.map((id) => (
-            <Link key={id} href={hrefWith({ account: id })} aria-current={id === accountId}>
-              {id}
+        {/* Demo toolbar: an interview tool, not site content, so it stays left-to-right. */}
+        <nav className="demo-bar" aria-label="Demo controls" dir="ltr">
+          <div className="demo-group">
+            <span className="demo-label">Account</span>
+            {DEMO_ACCOUNTS.map((id) => (
+              <Link key={id} className="demo-option" href={hrefWith({ account: id })} aria-current={id === accountId}>
+                {id}
+              </Link>
+            ))}
+          </div>
+          <div className="demo-group">
+            <span className="demo-label">Direction</span>
+            <Link className="demo-option" href={hrefWith({ dir: "ltr" })} aria-current={direction === "ltr"}>
+              LTR
             </Link>
-          ))}
-          <Link href={hrefWith({ dir: "ltr" })} aria-current={direction === "ltr"}>LTR</Link>
-          <Link href={hrefWith({ dir: "rtl" })} aria-current={direction === "rtl"}>RTL</Link>
-          <span>
-            theme: {theme.theme_id}@{theme.theme_version}
+            <Link className="demo-option" href={hrefWith({ dir: "rtl" })} aria-current={direction === "rtl"}>
+              RTL
+            </Link>
+          </div>
+          <span className="demo-theme">
+            {theme.theme_id}@{theme.theme_version}
           </span>
         </nav>
 
-        <h1>{page.title}</h1>
+        <h1 className="page-title">{page.title}</h1>
 
         <div role="tablist" className="tablist">
           {page.tabs.map((tab) => (
@@ -63,7 +74,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<Que
           ))}
         </div>
 
-        <section role="tabpanel" id={`panel-${activeTab.id}`} aria-labelledby={`tab-${activeTab.id}`}>
+        <section role="tabpanel" className="panel" id={`panel-${activeTab.id}`} aria-labelledby={`tab-${activeTab.id}`}>
           {activeTab.body.map((block) => (
             <CatalogueBlock
               key={block.id}

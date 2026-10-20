@@ -19,7 +19,14 @@ export function UpdatesSignup({ label }: Props) {
 
   return (
     <form className={styles.form} onSubmit={handleSubmit}>
-      <input className={styles.input} type="email" name="email" placeholder="you@example.com" required />
+      <input
+        className={styles.input}
+        type="email"
+        name="email"
+        aria-label="Email address"
+        placeholder="you@example.com"
+        required
+      />
       <button className={styles.button} type="submit">
         {label}
       </button>
