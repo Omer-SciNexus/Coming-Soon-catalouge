@@ -1,0 +1,47 @@
+# Self-hosted demo stack: one Django/Wagtail container and one Next.js container.
+# No Vercel and no other services. SQLite lives in a named volume.
+#   docker compose up --build
+# Site: http://localhost:3000   Wagtail: http://localhost:8000/cms/   Django admin: http://localhost:8000/django-admin/
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    environment:
+      DJANGO_DEBUG: "0"
+      DJANGO_SECRET_KEY: "demo-only-change-me"
+      # "backend" is the host name the frontend container uses to reach Django.
+      DJANGO_ALLOWED_HOSTS: "localhost,127.0.0.1,backend"
+      DJANGO_DB_PATH: /data/db.sqlite3
+      DJANGO_MEDIA_ROOT: /data/media
+      FRONTEND_URL: "http://localhost:${FRONTEND_PORT:-3000}"
+      # Demo admin login, created on first start. Change it before showing anyone else.
+      DJANGO_SUPERUSER_USERNAME: admin
+      DJANGO_SUPERUSER_EMAIL: admin@example.invalid
+      DJANGO_SUPERUSER_PASSWORD: demo-admin-password
+    volumes:
+      - backend-data:/data
+    ports:
+      - "${BACKEND_PORT:-8000}:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/sites/account-ocean/')"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  frontend:
+    build:
+      context: frontend
+      args:
+        DJANGO_URL: http://backend:8000
+    environment:
+      DJANGO_URL: http://backend:8000
+    ports:
+      - "${FRONTEND_PORT:-3000}:3000"
+    depends_on:
+      backend:
+        condition: service_healthy
+
+volumes:
+  backend-data:
