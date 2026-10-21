@@ -7,6 +7,13 @@ from .adapter import to_catalogue_page
 from .models import ComingSoonPage, Website
 
 
+def site_list(request):
+    """Accounts that have a published page. The demo bar shows one button for each,
+    so a website added in the admin appears there without a code change."""
+    websites = Website.objects.filter(pages__live=True).distinct().order_by("id")
+    return JsonResponse({"accounts": [w.account_id for w in websites]})
+
+
 def site_payload(request, account_id):
     """Everything Next.js needs to render one account's website, in one response."""
     website = get_object_or_404(Website.objects.select_related("theme"), account_id=account_id)

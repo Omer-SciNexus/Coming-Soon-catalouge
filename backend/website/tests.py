@@ -93,6 +93,11 @@ class SiteApiTests(SeededTestCase):
         response = self.client.get(page.url)
         self.assertRedirects(response, f"{settings.FRONTEND_URL}/?account=account-olive", fetch_redirect_response=False)
 
+    def test_site_list_shows_only_accounts_with_a_published_page(self):
+        self.assertEqual(self.client.get("/api/sites/").json(), {"accounts": ["account-ocean", "account-olive"]})
+        ComingSoonPage.objects.get(website__website_id="website-02").unpublish()
+        self.assertEqual(self.client.get("/api/sites/").json(), {"accounts": ["account-ocean"]})
+
     def test_unknown_account_returns_404(self):
         self.assertEqual(self.client.get("/api/sites/account-nope/").status_code, 404)
 

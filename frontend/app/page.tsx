@@ -2,20 +2,21 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CatalogueBlock } from "@/components/CatalogueBlock";
 import { UsageBeacon } from "@/components/UsageBeacon";
-import { getSite } from "@/lib/api";
+import { getAccounts, getSite } from "@/lib/api";
 import { tokensToCssVars } from "@/lib/theme";
 import type { Direction } from "@/lib/types";
 
 // Always render on request, so the page reflects the current database records.
 export const dynamic = "force-dynamic";
 
-const DEMO_ACCOUNTS = ["account-ocean", "account-olive"];
-
 type Query = { account?: string; tab?: string; dir?: string };
 
 export default async function Page({ searchParams }: { searchParams: Promise<Query> }) {
   const query = await searchParams;
-  const accountId = query.account ?? DEMO_ACCOUNTS[0];
+  // The switcher lists every account with a published page, so new websites need no code change.
+  const accounts = await getAccounts();
+  const accountId = query.account ?? accounts[0];
+  if (!accountId) notFound();
   const site = await getSite(accountId);
   if (!site) notFound();
 
@@ -36,7 +37,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<Que
         <nav className="demo-bar" aria-label="Demo controls" dir="ltr">
           <div className="demo-group">
             <span className="demo-label">Account</span>
-            {DEMO_ACCOUNTS.map((id) => (
+            {accounts.map((id) => (
               <Link key={id} className="demo-option" href={hrefWith({ account: id })} aria-current={id === accountId}>
                 {id}
               </Link>
