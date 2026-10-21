@@ -1,4 +1,5 @@
-# Development settings for the interview demo. Not hardened for production.
+# Settings for the interview demo. The defaults are for local development;
+# docker-compose.yml overrides them with environment variables. Not hardened for production.
 import os
 from pathlib import Path
 
@@ -6,9 +7,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 DEMO_DATA_DIR = BASE_DIR.parent / "data"
 FRONTEND_URL = os.environ.get("FRONTEND_URL", "http://localhost:3000")
 
-SECRET_KEY = "dev-only-not-a-secret"
-DEBUG = True
-ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
+SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "dev-only-not-a-secret")
+DEBUG = os.environ.get("DJANGO_DEBUG", "1") == "1"
+ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "127.0.0.1,localhost").split(",")
 
 INSTALLED_APPS = [
     "catalogue",
@@ -37,6 +38,9 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    # Serves the admin CSS/JS (collected into STATIC_ROOT) from the app server itself,
+    # so self-hosting needs no separate web server for static files.
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -67,7 +71,8 @@ TEMPLATES = [
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        # In Docker this points into a volume, so the data survives container rebuilds.
+        "NAME": os.environ.get("DJANGO_DB_PATH", BASE_DIR / "db.sqlite3"),
     }
 }
 
@@ -80,7 +85,7 @@ USE_TZ = True
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "static"
 MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "media"
+MEDIA_ROOT = os.environ.get("DJANGO_MEDIA_ROOT", BASE_DIR / "media")
 
 # Dev only: emails (for example "Forgotten password?" links) are printed in the runserver terminal.
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
