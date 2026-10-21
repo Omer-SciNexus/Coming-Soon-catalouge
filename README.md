@@ -99,6 +99,26 @@ node .next\standalone\server.js
 
 `DJANGO_URL` must be set before the build because the `/api/usage` rewrite is fixed at build time.
 
+## Run the whole stack with Docker (one command)
+
+Two containers, nothing else: Django + Wagtail (gunicorn, WhiteNoise for admin files, SQLite in a volume)
+and the Next.js standalone server. Stop the dev servers first (ports 3000 and 8000).
+
+```powershell
+cd "E:\Work\Demo project\upwork deveo\Project"
+docker compose up --build
+```
+
+| What | URL |
+|---|---|
+| Site | http://localhost:3000/?account=account-ocean |
+| Wagtail admin | http://localhost:8000/cms/ (user `admin`, password `demo-admin-password`) |
+| Django admin | http://localhost:8000/django-admin/ |
+
+On start, the backend runs `migrate`, `seed_demo` and `createsuperuser` (see `backend/docker-entrypoint.sh`); all are safe to repeat.
+Other ports: `$env:FRONTEND_PORT = "3100"; $env:BACKEND_PORT = "8100"; docker compose up --build`.
+Stop: `docker compose down`. Delete the data too: `docker compose down -v`.
+
 ## Known limitations
 
 - The registry maps `component_key` to the code in this repo. A real catalogue would map `asset_id@version` to an immutable, built bundle. Today, versions 1.0.0 and 1.1.0 of one asset share the same component code.
@@ -107,6 +127,7 @@ node .next\standalone\server.js
 - Wagtail preview is turned off (the page is headless). A real preview would use Next.js draft mode with a preview token.
 - The usage endpoint is public and stores one row per block. It is a stand-in for the backend team's `asset_usage` and analytics work.
 - The signup form does not send email addresses anywhere.
+- In Docker (`DEBUG` off), uploaded Wagtail images are stored in the volume but not served; a production setup would serve `/media/` from the web server or object storage. The site itself uses no uploaded files.
 
 ## AI disclosure
 
