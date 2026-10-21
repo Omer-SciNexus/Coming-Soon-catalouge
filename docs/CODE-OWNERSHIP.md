@@ -37,7 +37,8 @@ Use this list to study the code. Before the interview, fill in the last column h
 
 | File | What it does | Me |
 |---|---|---|
-| `frontend/next.config.ts` | `output: "standalone"` for self-hosting; rewrites `/api/usage` to Django. | |
+| `frontend/next.config.ts` | `output: "standalone"` for self-hosting; rewrites `/api/usage` to Django; `allowedDevOrigins` lets `npm run dev` live reload work in Codespaces. | |
+| `.devcontainer/` (root) | GitHub Codespaces: Python 3.14 + Node 22; `setup.sh` installs packages, migrates, seeds and creates the demo admin; on open, `run-backend.sh` and `npm run dev` start in their own terminals; Copilot and chat are turned off. | |
 | `frontend/Dockerfile` | Two stages: build with `npm ci` + `npm run build`, then copy only the standalone server and static files into a small Node image; runs as the `node` user. | |
 | `docker-compose.yml` (root) | The self-hosted stack: `backend` and `frontend` containers, SQLite in the `backend-data` volume, demo admin login, frontend waits until the backend health check passes. | |
 | `frontend/lib/types.ts` | TypeScript types for the Django JSON. | |

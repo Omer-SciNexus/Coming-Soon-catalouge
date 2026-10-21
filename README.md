@@ -119,6 +119,30 @@ On start, the backend runs `migrate`, `seed_demo` and `createsuperuser` (see `ba
 Other ports: `$env:FRONTEND_PORT = "3100"; $env:BACKEND_PORT = "8100"; docker compose up --build`.
 Stop: `docker compose down`. Delete the data too: `docker compose down -v`.
 
+## Run it in GitHub Codespaces (browser only)
+
+For a computer where nothing is installed. Push to GitHub first, then on the repo page:
+**Code → Codespaces → Create codespace on master**. The first start takes a few minutes.
+
+- Setup (`.devcontainer/setup.sh`) installs the packages, runs `migrate` and `seed_demo`, and creates
+  the admin login `admin` / `demo-admin-password`.
+- Each time the Codespace opens, Django and `npm run dev` start in their own terminals (backend, frontend).
+- Open the **Ports** tab. Port 3000 is the site, port 8000 is the admin. Click the globe icon to open.
+  Add `?account=account-ocean` to the site URL, and `/cms/` or `/django-admin/` to the admin URL.
+- Ports stay **private**: only your GitHub account can open them. Share your screen, not the link.
+- Copilot and chat are turned off in this Codespace (`.devcontainer/devcontainer.json`).
+
+If a server stopped, start it again in a new terminal:
+
+```bash
+bash .devcontainer/run-backend.sh       # backend
+cd frontend && npm run dev              # frontend
+```
+
+Tests: `cd backend && python manage.py test`, then `cd frontend && npm test`.
+Reset the demo data: stop the backend, then `rm backend/db.sqlite3 && bash .devcontainer/setup.sh`.
+Stop the Codespace when you are done (github.com/codespaces), so it does not use your free hours.
+
 ## Known limitations
 
 - The registry maps `component_key` to the code in this repo. A real catalogue would map `asset_id@version` to an immutable, built bundle. Today, versions 1.0.0 and 1.1.0 of one asset share the same component code.
