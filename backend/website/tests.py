@@ -1,11 +1,14 @@
 import json
+import tempfile
 from io import StringIO
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.core.files.base import ContentFile
 from django.core.management import call_command
 from django.test import TestCase
 from wagtail.blocks import StructBlockValidationError
+from wagtail.documents import get_document_model
 from wagtail.users.models import UserProfile
 
 from catalogue.models import Asset, AssetVersion
@@ -33,6 +36,25 @@ class CatalogueAssetBlockTests(SeededTestCase):
     def test_valid_props_are_accepted(self):
         self.clean({"heading": "Hi", "description": "Soon"})
 
+    def test_image_is_accepted_from_version_1_1_0_only(self):
+        props = {"heading": "Hi", "description": "Soon", "image_url": "/media/original_images/a.jpg", "image_alt": "A"}
+        self.clean(props, version="1.1.0")
+        with self.assertRaises(StructBlockValidationError):
+            self.clean(props)  # 1.0.0 does not declare image_url
+
+    def test_document_is_accepted_from_version_1_2_0_only(self):
+        props = {"heading": "Hi", "description": "Soon", "document_url": "/documents/1/a.pdf", "document_label": "Brochure"}
+        self.clean(props, version="1.2.0")
+        with self.assertRaises(StructBlockValidationError):
+            self.clean(props, version="1.1.0")  # 1.1.0 does not declare document_url
+        with self.assertRaises(StructBlockValidationError):
+            self.clean({**props, "document_url": "javascript:alert(1)"}, version="1.2.0")
+
+    def test_unsafe_image_url_is_rejected(self):
+        for url in ["javascript:alert(1)", "//evil.example/a.jpg", "data:image/png;base64,AAAA"]:
+            with self.assertRaises(StructBlockValidationError, msg=url):
+                self.clean({"heading": "Hi", "description": "Soon", "image_url": url}, version="1.1.0")
+
     def test_undeclared_prop_is_rejected(self):
         with self.assertRaises(StructBlockValidationError) as caught:
             self.clean({"heading": "Hi", "description": "Soon", "colour": "red"})
@@ -58,20 +80,24 @@ class SelectableVersionsTests(SeededTestCase):
             status=status, component_key="ComingSoonHero", props_schema=hero.props_schema,
         )
 
-    def test_seeded_version_lists_both_assets(self):
-        self.assertEqual(selectable_versions(), [("1.0.0", "1.0.0 (coming-soon-hero, updates-signup)")])
+    def test_seeded_versions_list_their_assets(self):
+        self.assertEqual(selectable_versions(), [
+            ("1.0.0", "1.0.0 (coming-soon-hero, updates-signup)"),
+            ("1.1.0", "1.1.0 (coming-soon-hero)"),
+            ("1.2.0", "1.2.0 (coming-soon-hero)"),
+        ])
 
     def test_new_approved_version_becomes_selectable_and_draft_does_not(self):
-        self.add_version("1.1.0", "approved")
-        self.add_version("1.2.0", "draft")
+        self.add_version("1.3.0", "approved")
+        self.add_version("1.4.0", "draft")
         numbers = [number for number, _ in selectable_versions()]
-        self.assertEqual(numbers, ["1.0.0", "1.1.0"])
+        self.assertEqual(numbers, ["1.0.0", "1.1.0", "1.2.0", "1.3.0"])
 
     def test_versions_sort_as_numbers_not_text(self):
         self.add_version("1.10.0", "approved")
         self.add_version("1.9.0", "approved")
         numbers = [number for number, _ in selectable_versions()]
-        self.assertEqual(numbers, ["1.0.0", "1.9.0", "1.10.0"])
+        self.assertEqual(numbers, ["1.0.0", "1.1.0", "1.2.0", "1.9.0", "1.10.0"])
 
 
 class SiteApiTests(SeededTestCase):
@@ -97,6 +123,14 @@ class SiteApiTests(SeededTestCase):
         self.assertEqual(self.client.get("/api/sites/").json(), {"accounts": ["account-ocean", "account-olive"]})
         ComingSoonPage.objects.get(website__website_id="website-02").unpublish()
         self.assertEqual(self.client.get("/api/sites/").json(), {"accounts": ["account-ocean"]})
+
+    def test_uploaded_document_is_served_at_its_url(self):
+        with tempfile.TemporaryDirectory() as media_root, self.settings(MEDIA_ROOT=media_root):
+            document = get_document_model().objects.create(title="Brochure", file=ContentFile(b"%PDF-1.4", name="brochure.pdf"))
+            response = self.client.get(document.url)
+            self.assertEqual(response.status_code, 200)
+            self.assertTrue(document.url.startswith("/documents/"))
+            response.close()
 
     def test_unknown_account_returns_404(self):
         self.assertEqual(self.client.get("/api/sites/account-nope/").status_code, 404)

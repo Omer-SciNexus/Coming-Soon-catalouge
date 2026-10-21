@@ -7,6 +7,8 @@ from wagtail.models import Site
 from catalogue.models import Asset, AssetVersion, Theme
 from website.models import ComingSoonPage, Website
 
+# Demo additions: coming-soon-hero 1.1.0 adds an optional image, 1.2.0 also an optional document link.
+ASSET_FILES = ["assets.sample.json", "assets.hero-image.json", "assets.hero-document.json"]
 PAGE_FILES = ["wagtail-page.sample.json", "wagtail-page.website-02.json"]
 
 
@@ -20,8 +22,9 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         for record in read_json("accounts-themes.sample.json"):
             self.load_account(record)
-        for manifest in read_json("assets.sample.json"):
-            self.load_manifest(manifest)
+        for name in ASSET_FILES:
+            for manifest in read_json(name):
+                self.load_manifest(manifest)
         # Under the default site home page, so Wagtail gives each page a URL ("View live").
         root = Site.objects.get(is_default_site=True).root_page
         for name in PAGE_FILES:

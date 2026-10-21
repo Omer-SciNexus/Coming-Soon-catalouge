@@ -55,3 +55,59 @@
   color: color-mix(in srgb, var(--text) 75%, var(--surface));
   font-size: clamp(1.05rem, 2vw, 1.25rem);
 }
+
+/* Version 1.2.0: optional document link, an outlined pill in the accent colour. */
+.document {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-block-start: 1.75rem;
+  padding: 0.7rem 1.25rem;
+  border: 1.5px solid var(--accent);
+  border-radius: 999px;
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color 150ms ease, color 150ms ease;
+}
+
+.document:hover {
+  background: var(--accent);
+  color: var(--button-text);
+}
+
+.document:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--accent) 45%, transparent);
+  outline-offset: 3px;
+}
+
+/* Version 1.1.0 with an image. Narrow screens: the image goes under the text.
+   Wide screens: text on the start side, image on the end side (grid follows dir, so RTL swaps them). */
+.image {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  margin-block-start: 2rem;
+  object-fit: cover;
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius, 1.5rem) * 0.66);
+  background: color-mix(in srgb, var(--accent) 8%, var(--surface));
+  box-shadow: 0 18px 36px -24px color-mix(in srgb, var(--text) 45%, transparent);
+}
+
+@media (min-width: 56rem) {
+  .withImage {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    column-gap: clamp(1.5rem, 4vw, 3rem);
+    align-items: center;
+  }
+
+  .withImage .heading {
+    font-size: clamp(2rem, 4vw, 2.75rem);
+  }
+
+  .withImage .image {
+    margin: 0;
+  }
+}

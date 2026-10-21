@@ -1,0 +1,22 @@
+[
+  {
+    "asset_id": "coming-soon-hero",
+    "version": "1.1.0",
+    "kind": "section",
+    "source": "human",
+    "status": "approved",
+    "component_key": "ComingSoonHero",
+    "supported_directions": ["ltr", "rtl"],
+    "props_schema": {
+      "type": "object",
+      "required": ["heading", "description"],
+      "properties": {
+        "heading": {"type": "string"},
+        "description": {"type": "string"},
+        "image_url": {"type": "string", "pattern": "^(https?://|/(?!/))\\S+$"},
+        "image_alt": {"type": "string"}
+      },
+      "additionalProperties": false
+    }
+  }
+]

@@ -4,6 +4,7 @@ from django.contrib import admin
 from django.urls import include, path
 from wagtail import urls as wagtail_urls
 from wagtail.admin import urls as wagtailadmin_urls
+from wagtail.documents import urls as wagtaildocs_urls
 
 from catalogue.views import record_usage
 from website.views import site_list, site_payload
@@ -11,6 +12,9 @@ from website.views import site_list, site_payload
 urlpatterns = [
     path("django-admin/", admin.site.urls),
     path("cms/", include(wagtailadmin_urls)),
+    # Uploaded Wagtail documents, for example /documents/1/brochure.pdf. Served by a Django view,
+    # so they work with DEBUG off too (unlike /media/).
+    path("documents/", include(wagtaildocs_urls)),
     path("api/sites/", site_list),
     path("api/sites/<slug:account_id>/", site_payload),
     path("api/usage/", record_usage),
