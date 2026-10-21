@@ -2,9 +2,11 @@ import json
 from io import StringIO
 
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.core.management import call_command
 from django.test import TestCase
 from wagtail.blocks import StructBlockValidationError
+from wagtail.users.models import UserProfile
 
 from catalogue.models import Asset, AssetVersion
 
@@ -100,3 +102,13 @@ class SiteApiTests(SeededTestCase):
         page.save_revision()  # saved as a draft, not published
         payload = self.client.get("/api/sites/account-ocean/").json()
         self.assertEqual(payload["page"]["title"], "Coming Soon")
+
+
+class AdminThemeTests(TestCase):
+    def test_new_user_gets_the_light_wagtail_admin_theme(self):
+        user = get_user_model().objects.create_superuser("editor", "editor@example.invalid", "pass-123-word")
+        self.assertEqual(UserProfile.get_for_user(user).theme, "light")
+
+        self.client.force_login(user)
+        response = self.client.get("/cms/")
+        self.assertContains(response, '<meta name="color-scheme" content="light">', html=True)
