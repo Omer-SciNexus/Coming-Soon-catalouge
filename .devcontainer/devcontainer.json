@@ -1,0 +1,35 @@
+// GitHub Codespaces: the whole demo in the browser, nothing to install on the computer.
+// On create: install packages and load the demo data (setup.sh).
+// On every open: start Django (port 8000) and Next.js (port 3000) in their own terminals.
+{
+  "name": "Coming Soon catalogue demo",
+  "image": "mcr.microsoft.com/devcontainers/python:3.14",
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": { "version": "22" }
+  },
+  "forwardPorts": [3000, 8000],
+  "portsAttributes": {
+    "3000": { "label": "Site (Next.js)", "onAutoForward": "notify" },
+    "8000": { "label": "Django + Wagtail admin", "onAutoForward": "silent" }
+  },
+  "remoteEnv": {
+    // Codespaces opens the servers on https://<codespace>-<port>.app.github.dev
+    "DJANGO_ALLOWED_HOSTS": "127.0.0.1,localhost,.app.github.dev",
+    "DJANGO_CSRF_TRUSTED_ORIGINS": "https://*.app.github.dev",
+    "NEXT_TELEMETRY_DISABLED": "1"
+  },
+  "postCreateCommand": "bash .devcontainer/setup.sh",
+  "postAttachCommand": {
+    "backend": "bash .devcontainer/run-backend.sh",
+    "frontend": "cd frontend && npm run dev"
+  },
+  "customizations": {
+    "vscode": {
+      "settings": {
+        // The interview does not allow AI: hide Copilot and chat in this Codespace.
+        "chat.disableAIFeatures": true,
+        "github.copilot.enable": { "*": false }
+      }
+    }
+  }
+}
