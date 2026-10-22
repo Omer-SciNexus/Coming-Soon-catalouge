@@ -95,6 +95,10 @@ change `border-radius: 999px;` to `border-radius: var(--radius, 999px);`. `npm t
 
 **Expected:** a third look, same components, no component code changed.
 
+**Bonus:** publish the copy while its Website is still `website-01`. Wagtail refuses:
+'website-01 already has a live page: "Coming Soon". Unpublish that page first, or pick another website.'
+The API sends one live page per website, so a second one would be hidden. Save draft is still allowed.
+
 ## 5. Set updates-signup to draft and show the placeholder
 
 1. Django admin → Asset versions → `updates-signup@1.0.0` → Status: `draft`. Save.

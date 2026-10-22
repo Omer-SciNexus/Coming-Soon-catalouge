@@ -9,12 +9,13 @@ from django.core.management import call_command
 from django.test import TestCase
 from wagtail.blocks import StructBlockValidationError
 from wagtail.documents import get_document_model
+from wagtail.test.utils.form_data import inline_formset, nested_form_data, streamfield
 from wagtail.users.models import UserProfile
 
 from catalogue.models import Asset, AssetVersion
 
 from .blocks import CatalogueAssetBlock, selectable_assets, selectable_versions
-from .models import ComingSoonPage
+from .models import ComingSoonPage, Website
 
 
 def read_json(name):
@@ -141,6 +142,52 @@ class SiteApiTests(SeededTestCase):
         page.save_revision()  # saved as a draft, not published
         payload = self.client.get("/api/sites/account-ocean/").json()
         self.assertEqual(payload["page"]["title"], "Coming Soon")
+
+
+class OneLivePagePerWebsiteTests(SeededTestCase):
+    def setUp(self):
+        super().setUp()
+        user = get_user_model().objects.create_superuser("editor", "editor@example.invalid", "pass-123-word")
+        self.client.force_login(user)
+        self.olive_page = ComingSoonPage.objects.get(website__website_id="website-02")
+
+    def page_data(self, website_id, action):
+        website = Website.objects.get(website_id=website_id)
+        props = json.dumps({"heading": "Hi", "description": "Soon"})
+        body = streamfield([("catalogue_asset", {"asset_id": "coming-soon-hero", "version": "1.0.0", "props": props})])
+        data = nested_form_data({
+            "title": "Test2", "slug": "test2", "website": website.pk,
+            "tabs": streamfield([("tab", {"tab_id": "announcement", "label": "Announcement", "body": body})]),
+            "comments": inline_formset([]),
+        })
+        data[action] = "1"
+        return data
+
+    def add_page(self, website_id, action):
+        url = f"/cms/pages/add/website/comingsoonpage/{self.olive_page.get_parent().pk}/"
+        return self.client.post(url, self.page_data(website_id, action))
+
+    def test_second_live_page_for_a_website_is_refused(self):
+        response = self.add_page("website-02", "action-publish")
+        self.assertEqual(response.status_code, 200)  # the form again, with the error
+        self.assertContains(response, "website-02 already has a live page")
+        self.assertFalse(ComingSoonPage.objects.filter(slug="test2").exists())
+
+    def test_draft_is_allowed_and_can_be_published_after_the_old_page_is_unpublished(self):
+        self.assertEqual(self.add_page("website-02", "action-save-draft").status_code, 302)
+        draft = ComingSoonPage.objects.get(slug="test2")
+        self.assertFalse(draft.live)
+        self.olive_page.unpublish()
+        response = self.client.post(f"/cms/pages/{draft.pk}/edit/", self.page_data("website-02", "action-publish"))
+        self.assertEqual(response.status_code, 302)
+        draft.refresh_from_db()
+        self.assertTrue(draft.live)
+
+    def test_page_for_a_free_website_is_published(self):
+        Website.objects.create(website_id="website-03", account_id="account-sand", client_id="client-01",
+                               theme=self.olive_page.website.theme)
+        self.assertEqual(self.add_page("website-03", "action-publish").status_code, 302)
+        self.assertTrue(ComingSoonPage.objects.get(slug="test2").live)
 
 
 class AdminThemeTests(TestCase):
