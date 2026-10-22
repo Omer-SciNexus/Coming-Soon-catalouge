@@ -60,8 +60,8 @@ Then show http://127.0.0.1:8000/api/sites/account-ocean/.
 > Existing pages do not move: they keep the exact version they pinned until an editor changes it
 > and publishes again."
 
-**Show it live (1 minute):** Django admin → add `coming-soon-hero` 1.1.0 as approved (same schema as 1.0.0) →
-Wagtail edit page → open the version list: `1.1.0 (coming-soon-hero)` is there. Do not publish. Delete 1.1.0 after.
+**Show it live (1 minute):** Django admin → add `coming-soon-hero` 1.3.0 as approved (same schema as 1.2.0) →
+Wagtail edit page → open the version list: `1.3.0 (coming-soon-hero)` is there. Do not publish. Delete 1.3.0 after.
 
 **Rebuild or runtime?** (they will probably ask)
 

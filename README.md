@@ -13,7 +13,7 @@ different themes. All themes, assets, versions and pages are **database records*
                                          POST /api/usage/  <------------------ UsageBeacon (analytics ids)
 ```
 
-- `data/`: the client's sample files (unchanged), plus `wagtail-page.website-02.json` (my demo assumption: a second page for website-02).
+- `data/`: the client's sample files (unchanged), plus `wagtail-page.website-02.json` (my demo assumption: a second page for website-02) and `assets.hero-image.json` / `assets.hero-document.json` (coming-soon-hero 1.1.0 adds an optional image, 1.2.0 also an optional PDF download link).
 - `backend/`: Django + Wagtail. The `catalogue` app holds assets, versions, themes and usage. The `website` app holds websites, the Wagtail page, the StreamField blocks, the adapter and the site API.
 - `frontend/`: Next.js renderer. It does not store any data.
 - `docs/`: walkthrough, rehearsal steps, questions for the client, file list, interview notes.
@@ -151,7 +151,7 @@ Stop the Codespace when you are done (github.com/codespaces), so it does not use
 - Wagtail preview is turned off (the page is headless). A real preview would use Next.js draft mode with a preview token.
 - The usage endpoint is public and stores one row per block. It is a stand-in for the backend team's `asset_usage` and analytics work.
 - The signup form does not send email addresses anywhere.
-- In Docker (`DEBUG` off), uploaded Wagtail images are stored in the volume but not served; a production setup would serve `/media/` from the web server or object storage. The site itself uses no uploaded files.
+- In Docker (`DEBUG` off), uploaded Wagtail images are stored in the volume but not served; a production setup would serve `/media/` from the web server or object storage. So a hero image with a `/media/...` address shows locally but not in Docker. Documents (`/documents/...`) are served by a Django view and work in both.
 
 ## AI disclosure
 
