@@ -9,6 +9,10 @@ from wagtail.documents import urls as wagtaildocs_urls
 from catalogue.views import record_usage
 from website.views import site_list, site_payload
 
+admin.site.site_header = "Catalogue admin"
+admin.site.site_title = "Catalogue admin"
+admin.site.index_title = "Themes, assets and websites"
+
 urlpatterns = [
     path("django-admin/", admin.site.urls),
     path("cms/", include(wagtailadmin_urls)),

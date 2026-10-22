@@ -1,0 +1,620 @@
+/* Modern look for the Django admin. Colours follow the Wagtail admin (purple and teal),
+   so both admins look like one product. Most changes set Django's own CSS variables. */
+
+:root {
+    --brand: #261a4c;
+    --teal: #007d7e;
+    --teal-dark: #005b5e;
+    --page-bg: #f4f4f8;
+    --card-bg: #ffffff;
+    --line: #e4e3ec;
+    --text: #1f1d2b;
+    --muted: #6b6880;
+    --radius: 12px;
+    --shadow: 0 1px 2px rgb(31 29 43 / 0.04), 0 4px 16px rgb(31 29 43 / 0.06);
+
+    --primary: var(--brand);
+    --secondary: var(--brand);
+    --accent: #ffffff;
+    --primary-fg: #ffffff;
+    --body-fg: var(--text);
+    --body-bg: var(--card-bg);
+    --body-quiet-color: var(--muted);
+    --body-medium-color: #3d3a4f;
+    --body-loud-color: var(--text);
+    --header-color: #d9d4ee;
+    --header-branding-color: #ffffff;
+    --header-bg: var(--brand);
+    --header-link-color: #ffffff;
+    --breadcrumbs-fg: var(--muted);
+    --breadcrumbs-link-fg: var(--teal);
+    --breadcrumbs-bg: transparent;
+    --link-fg: var(--teal);
+    --link-hover-color: var(--teal-dark);
+    --link-selected-fg: var(--teal-dark);
+    --hairline-color: var(--line);
+    --border-color: #cfcdda;
+    --error-fg: #c0392b;
+    --message-info-bg: #e8f3fb;
+    --message-success-bg: #e3f5ec;
+    --message-warning-bg: #fdf3dc;
+    --message-error-bg: #fbe9e7;
+    --darkened-bg: #f8f8fb;
+    --selected-bg: #ecebf3;
+    --selected-row: #e6f4f4;
+    --button-fg: #ffffff;
+    --button-bg: var(--teal);
+    --button-hover-bg: var(--teal-dark);
+    --default-button-bg: var(--teal);
+    --default-button-hover-bg: var(--teal-dark);
+    --close-button-bg: #6b6880;
+    --close-button-hover-bg: #3d3a4f;
+    --delete-button-bg: #c0392b;
+    --delete-button-hover-bg: #a5281b;
+    --object-tools-fg: #ffffff;
+    --object-tools-bg: var(--teal);
+    --object-tools-hover-bg: var(--teal-dark);
+}
+
+body {
+    background: var(--page-bg);
+    font-size: 0.9375rem;
+}
+
+/* Django underlines links so they are not shown by colour alone. Keep that, but softer. */
+/* #container: Django's underline rule uses an id inside :not(), so this needs one too. */
+#container a:link,
+#container a:visited {
+    text-decoration-color: rgb(0 125 126 / 0.35);
+    text-underline-offset: 3px;
+}
+
+#container a:hover {
+    text-decoration-color: currentColor;
+}
+
+/* ---- Header ---- */
+
+#header {
+    padding: 14px 32px;
+    box-shadow: 0 2px 12px rgb(38 26 76 / 0.25);
+}
+
+#site-name a {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 1.25rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+}
+
+.brand-mark {
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 9px;
+    background: linear-gradient(135deg, #2ec4c5, var(--teal));
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+#user-tools {
+    font-size: 0.8125rem;
+    text-transform: none;
+    letter-spacing: normal;
+}
+
+#user-tools a {
+    border-bottom: none;
+    padding: 6px 10px;
+    border-radius: 8px;
+}
+
+#user-tools a:hover,
+#user-tools a:focus {
+    background: rgb(255 255 255 / 0.12);
+    color: #ffffff;
+    text-decoration: none;
+}
+
+#logout-form button {
+    padding: 6px 10px;
+    border-radius: 8px;
+    border-bottom: none;
+    font-size: 0.8125rem;
+    text-transform: none;
+    letter-spacing: normal;
+}
+
+#logout-form button:hover {
+    background: rgb(255 255 255 / 0.12);
+    text-decoration: none;
+}
+
+/* Light only: hide Django's theme switch. */
+.theme-toggle {
+    display: none;
+}
+
+/* ---- Breadcrumbs ---- */
+
+div.breadcrumbs {
+    padding: 18px 32px 0;
+    font-size: 0.8125rem;
+}
+
+div.breadcrumbs a:hover {
+    color: var(--teal-dark);
+}
+
+/* ---- Page ---- */
+
+#content {
+    padding: 20px 32px 40px;
+}
+
+#content h1 {
+    font-size: 1.625rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    margin: 0 0 20px;
+}
+
+#content h2 {
+    font-weight: 600;
+}
+
+/* ---- Cards (app lists, forms, filters, recent actions) ---- */
+
+.module,
+#changelist-filter,
+#nav-sidebar .module {
+    background: var(--card-bg);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+}
+
+#content-main .module,
+#content-related {
+    margin-bottom: 24px;
+}
+
+.module h2,
+.module caption,
+.inline-group h2 {
+    background: var(--card-bg);
+    color: var(--brand);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--line);
+}
+
+.module caption a,
+.module h2 a,
+a.section:link,
+a.section:visited {
+    color: var(--brand);
+}
+
+.module caption a:hover {
+    color: var(--teal);
+}
+
+/* Highlight the app of the current page in the side menu and on the home page. */
+.module.current-app caption,
+#nav-sidebar .current-app .section:link,
+#nav-sidebar .current-app .section:visited {
+    color: var(--teal);
+    background: var(--card-bg);
+}
+
+#content-related {
+    background: transparent;
+}
+
+#content-related .module h2 {
+    background: var(--card-bg);
+    color: var(--text);
+    font-size: 1rem;
+    letter-spacing: 0;
+    text-transform: none;
+}
+
+#content-related h3 {
+    font-size: 0.75rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 0 18px;
+}
+
+#content-related p {
+    padding: 0 18px;
+    color: var(--muted);
+}
+
+/* ---- Tables ---- */
+
+table {
+    border-color: var(--line);
+}
+
+td,
+th {
+    padding: 12px 18px;
+    border-bottom-color: var(--line);
+    vertical-align: middle;
+}
+
+thead th,
+tfoot td {
+    background: var(--darkened-bg);
+    color: var(--muted);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--line);
+}
+
+tr:last-child td,
+tr:last-child th {
+    border-bottom: none;
+}
+
+tbody tr:hover td,
+tbody tr:hover th {
+    background: #f6f6fa;
+}
+
+.module th[scope="row"] a {
+    font-weight: 600;
+    color: var(--text);
+}
+
+.module th[scope="row"] a:hover {
+    color: var(--teal);
+}
+
+/* "Add" and "Change" links on the home page. */
+a.addlink,
+a.changelink,
+a.viewlink {
+    font-weight: 500;
+    padding: 4px 10px 4px 26px;
+    border-radius: 999px;
+    background-position: 8px center;
+}
+
+a.addlink:hover,
+a.changelink:hover,
+a.viewlink:hover {
+    background-color: #e6f4f4;
+    text-decoration: none;
+}
+
+/* ---- Change list ---- */
+
+#changelist .actions {
+    background: var(--darkened-bg);
+    padding: 12px 18px;
+    border-bottom: 1px solid var(--line);
+}
+
+#changelist .actions.selected,
+#changelist tr.selected td,
+#changelist tr.selected th {
+    background: var(--selected-row);
+}
+
+#changelist-search,
+#toolbar {
+    border-radius: var(--radius);
+}
+
+#toolbar {
+    background: var(--card-bg);
+    border: 1px solid var(--line);
+    padding: 12px 16px;
+    margin-bottom: 16px;
+    box-shadow: var(--shadow);
+}
+
+#changelist .paginator {
+    background: var(--card-bg);
+    border-top: 1px solid var(--line);
+    padding: 12px 18px;
+    color: var(--muted);
+}
+
+#changelist-filter h2 {
+    padding: 14px 18px;
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--brand);
+    border-bottom: 1px solid var(--line);
+}
+
+#changelist-filter h3 {
+    margin: 16px 18px 6px;
+    color: var(--text);
+    font-weight: 600;
+}
+
+#changelist-filter li {
+    margin-left: 18px;
+}
+
+#changelist-filter li.selected a {
+    color: var(--teal);
+    font-weight: 600;
+}
+
+/* ---- Buttons ---- */
+
+.button,
+input[type="submit"],
+input[type="button"],
+.submit-row input,
+a.button {
+    border-radius: 8px;
+    padding: 10px 18px;
+    font-weight: 600;
+    font-size: 0.875rem;
+    text-transform: none;
+    transition: background-color 0.15s, box-shadow 0.15s;
+}
+
+/* Same height for every button in the save bar, links and inputs alike. */
+.submit-row input,
+.submit-row a.deletelink,
+.submit-row a.closelink {
+    box-sizing: border-box;
+    height: 40px;
+    padding: 0 18px;
+    display: inline-flex;
+    align-items: center;
+    line-height: 1;
+}
+
+.button.default,
+input[type="submit"].default,
+.submit-row input.default {
+    box-shadow: 0 2px 8px rgb(0 125 126 / 0.3);
+    text-transform: none;
+}
+
+.object-tools a:link,
+.object-tools a:visited {
+    border-radius: 999px;
+    padding: 8px 16px;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: normal;
+    text-transform: none;
+    box-shadow: 0 2px 8px rgb(0 125 126 / 0.25);
+}
+
+.object-tools a.addlink {
+    background-position: 14px center;
+    padding-left: 32px;
+}
+
+.submit-row {
+    background: var(--card-bg);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 14px 18px;
+    gap: 10px;
+}
+
+.submit-row a.deletelink,
+.submit-row a.closelink {
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+.submit-row a.deletelink:hover,
+.submit-row a.closelink:hover {
+    text-decoration: none;
+}
+
+/* ---- Forms ---- */
+
+input[type="text"],
+input[type="password"],
+input[type="email"],
+input[type="url"],
+input[type="number"],
+input[type="search"],
+input[type="tel"],
+textarea,
+select,
+.vTextField {
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 8px 12px;
+    background: var(--card-bg);
+    color: var(--text);
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+select {
+    height: auto;
+    padding-right: 28px;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+    border-color: var(--teal);
+    outline: none;
+    box-shadow: 0 0 0 3px rgb(0 125 126 / 0.2);
+}
+
+fieldset.module {
+    padding-bottom: 6px;
+}
+
+.form-row {
+    padding: 14px 18px;
+    border-bottom-color: var(--line);
+}
+
+.aligned label {
+    font-weight: 600;
+    color: var(--text);
+}
+
+.aligned label.required::after,
+label.required::after {
+    content: " *";
+    color: var(--error-fg);
+}
+
+div.help,
+.help {
+    color: var(--muted);
+}
+
+/* JSON fields (theme tokens, props schema, directions) read better in a code font. */
+.field-design_tokens textarea,
+.field-props_schema textarea,
+.field-supported_directions textarea {
+    font-family: var(--font-family-monospace);
+    font-size: 0.8125rem;
+    line-height: 1.6;
+    background: #fbfbfd;
+}
+
+.errornote,
+ul.errorlist li {
+    border-radius: 8px;
+}
+
+.errornote {
+    border: 1px solid #f1c4bf;
+    background: var(--message-error-bg);
+    padding: 12px 16px;
+}
+
+/* ---- Messages ---- */
+
+ul.messagelist li {
+    border-radius: 10px;
+    margin-bottom: 12px;
+    font-size: 0.875rem;
+    background-position: 16px center;
+    padding-left: 44px;
+    border: 1px solid rgb(31 29 43 / 0.06);
+}
+
+/* ---- Side menu (on list and edit pages) ---- */
+
+#nav-sidebar {
+    background: var(--page-bg);
+    border-right: 1px solid var(--line);
+    padding: 16px 12px;
+}
+
+#nav-sidebar .module {
+    margin-bottom: 12px;
+}
+
+#nav-sidebar th,
+#nav-sidebar td {
+    padding: 8px 14px;
+}
+
+#nav-sidebar .current-model {
+    background: #e6f4f4;
+}
+
+#nav-sidebar .current-model a {
+    color: var(--teal-dark);
+    font-weight: 600;
+}
+
+.toggle-nav-sidebar {
+    background: var(--page-bg);
+    border-right-color: var(--line);
+    color: var(--muted);
+}
+
+#nav-filter {
+    border-radius: 8px;
+    margin-bottom: 12px;
+}
+
+/* ---- Login page ---- */
+
+body.login {
+    background:
+        radial-gradient(circle at 20% 10%, rgb(0 125 126 / 0.18), transparent 45%),
+        radial-gradient(circle at 85% 90%, rgb(38 26 76 / 0.25), transparent 50%),
+        var(--page-bg);
+}
+
+.login #container {
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    box-shadow: 0 20px 50px rgb(38 26 76 / 0.15);
+    overflow: hidden;
+    margin-top: 12vh;
+}
+
+.login #header {
+    padding: 22px 28px;
+    box-shadow: none;
+}
+
+.login #content {
+    padding: 24px 28px 28px;
+}
+
+.login .form-row {
+    padding: 6px 0;
+}
+
+.login .form-row label {
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
+.login .form-row input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px 12px;
+}
+
+.login .submit-row {
+    border: none;
+    box-shadow: none;
+    padding: 12px 0 0;
+}
+
+.login .submit-row input {
+    width: 100%;
+}
+
+/* ---- Phone width ---- */
+
+@media (max-width: 767px) {
+    #header,
+    div.breadcrumbs,
+    #content {
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+}
